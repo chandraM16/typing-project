@@ -1,10 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Speed } from "./Speed";
+import { Error } from "./Error";
 import { Accuracy } from "./Accuracy";
 
 import { Count } from "./Count";
 import { useDispatch, useSelector } from "react-redux";
-import { resetStat, updateCount, updateAccuracy } from "../Redux/action";
+import {
+  resetStat,
+  updateCount,
+  updateAccuracy,
+  updateError,
+} from "../Redux/action";
 
 // define quotes to be used
 export const MainCont = () => {
@@ -19,15 +24,17 @@ export const MainCont = () => {
   const dispatch = useDispatch();
   const { count } = useSelector((store) => store.typing);
   const idx = useRef(0);
-  const nextLetter = useRef("");
-
+  const localAcc = useRef(0);
   const [localInput, setLocalInput] = useState("");
+  const [nextLetter, setNextLetter] = useState("");
 
   function handleInputChange(e) {
     let value = e.target.value;
     setLocalInput(e.target.value);
     if (quotes_array[idx.current] === value) {
       idx.current = idx.current + 1;
+      dispatch(updateAccuracy(localAcc.current));
+      dispatch(updateError((100 - localAcc.current).toFixed(2)));
       setLocalInput("");
       return;
     }
@@ -47,23 +54,24 @@ export const MainCont = () => {
 
   useEffect(() => {
     if (quotes_array[idx.current].startsWith(localInput)) {
-      let accuracy = (localInput.length / count) * 100;
-      nextLetter.current = quotes_array[idx.current][localInput.length];
-
-      dispatch(updateAccuracy(accuracy ? Math.floor(accuracy) : 0));
+      let accu = (localInput.length / count) * 100;
+      setNextLetter(quotes_array[idx.current][localInput.length]);
+      localAcc.current = +accu.toFixed(2);
     }
   }, [localInput]);
   return (
     <div className="main_cont">
       <h2 className="cont_heading">Touch Typing</h2>
       <div className="stats_box">
-        <Speed />
-        <Accuracy />
+        <Accuracy ref={localAcc} />
+        <Error ref={localAcc} />
         <Count />
       </div>
       <h3 className="sample_text">{quotes_array[idx.current]}</h3>
-      <div style={{display : "flex", justifyContent : "flex-end", width : "100%"}}>
-        <p>Next Letter -: {nextLetter.current} </p>
+      <div
+        style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}
+      >
+        <p>Next Supposed Letter -: {nextLetter} </p>
       </div>
       <input
         type="text"

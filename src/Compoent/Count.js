@@ -5,7 +5,7 @@ export const Count = () => {
   const { count } = useSelector((store) => store.typing);
   return (
     <div className="stat_item">
-      <p>Count</p>
+      <p>Total Count</p>
       <h1>{count}</h1>
     </div>
   );

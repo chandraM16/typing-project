@@ -1,4 +1,4 @@
-import { RESET, COUNT, ACCURACY } from "./constant";
+import { RESET, COUNT, ACCURACY, ERROR } from "./constant";
 
 export const resetStat = () => {
   return {
@@ -8,6 +8,12 @@ export const resetStat = () => {
 export const updateCount = () => {
   return {
     type: COUNT,
+  };
+};
+export const updateError = (error) => {
+  return {
+    type: ERROR,
+    error,
   };
 };
 
